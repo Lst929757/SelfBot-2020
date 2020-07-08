@@ -1,0 +1,6 @@
+
+[<module 'time' (built-in)>] local variable 'ginfo' referenced before assignment
+[<module 'time' (built-in)>] name 'clMid' is not defined
+[<module 'time' (built-in)>] local variable 'ginfo' referenced before assignment
+[<module 'time' (built-in)>] local variable 'ginfo' referenced before assignment
+[<module 'time' (built-in)>] name 'clMid' is not defined
