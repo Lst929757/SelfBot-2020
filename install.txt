@@ -1,0 +1,10 @@
+thrift
+requests
+rsa
+humanfriendly
+pytz
+pafy
+youtube-dl
+tweepy
+wikipedia
+zalgo_text
