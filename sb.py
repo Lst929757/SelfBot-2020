@@ -21,9 +21,8 @@ from ttypes import LoginRequest
 import json, requests, LineService
 from thrift.transport import THttpClient
 
+# ----- INI LOGIN VIA EMAIL ----- # 
 botStart = time.time()
-# cl = LINE("ESgDR0uH3yuSlnbaBCR3.gD5TSeVN7yElVUvXKIBRuW.wkgOyO2rxnoKYotKl8+joqjzrvUuaef1KsMOS3D8IiA=")
-#cl = LINE("YOUR TOKEN")
 cl = LINE("maudyliana666@gmail.com","ditobaskaran123")
 
 cl.log("Auth Token : ESnUFOPlJqnJ6EUY8e43.gD5TSeVN7yElVUvXKIBRuW.5WtDJv3qIG5pUUjSqjEh+ouuqOdiyfWOuedbOWDLVqc=" + str(cl.authToken))
@@ -32,11 +31,38 @@ cl.log("Channel Token : TJvDC9rMp9DZ0il9wq3bnb54lngsoWcewxoPS/JB1wSea5/FTQlFkZNN
 readOpen = codecs.open("read.json","r","utf-8")
 settingsOpen = codecs.open("temp.json","r","utf-8")
 
+# ----- INI LOGIN VIA QR LINK ----- # 
+# botStart = time.time()
+# try:
+#     apiKey = "Z6vMBEnkp04n"
+#     headers = {
+#         "apiKey":apiKey,
+#         "appName":"IOSIPAD\t10.10.0\tiPhone 8\t11.2.5",
+#         "cert" : None,
+#         "server": random.choice(["pool-1","pool-2"]),
+#         "sysname": "DBSBOT"
+#         }
+#     main = json.loads(requests.get("https://api.be-team.me/qrv2",headers=headers).text)
+#     print("QR LINK: " + main["result"]["qr_link"])
+#     if not headers["cert"]:
+#         result = json.loads(requests.get(main["result"]["cb_pincode"],headers=headers).text)
+#         print("Your Pincode: " + result["result"])
+#     result = json.loads(requests.get(main["result"]["cb_token"],headers=headers).text)
+#     if result["status"] != 200:
+#         print("[ Error ] "+ result["reason"])
+#     cl = LINE(result["result"]["token"],appName="IOSIPAD\t10.10.0\tiPhone 8\t11.2.5")
+#     print ("===== LOGIN BERHASIL =====")
+# except:pass
+
+channelToken = cl.getChannelResult()
+readOpen = codecs.open("read.json","r","utf-8")
+settingsOpen = codecs.open("temp.json","r","utf-8")
+
 clMID = cl.profile.mid
 clProfile = cl.getProfile()
 clSettings = cl.getSettings()
 oepoll = OEPoll(cl)
-admin = ["u4669d4ad77f131a3fb4219a939fba991", "u5d4464430b4f6e405090cb63c34f471e"]
+admin = ["u4669d4ad77f131a3fb4219a939fba991"]
 call = cl
 read = json.load(readOpen)
 settings = json.load(settingsOpen)
@@ -65,8 +91,9 @@ settings = {
     "autoJoin": False,
     "autoLeave": False,
     "autoRead": True,
+    "autoResponPc": False,
     "admin":{
-      "u4669d4ad77f131a3fb4219a939fba991":True,
+      "uac1ba8808fb332e753101563464fa569":True,
     },
     "bots":{},
     "addbots": False,
@@ -76,6 +103,7 @@ settings = {
     "lang":"JP",
     "commentPost": "HADIR BUAT LIKE STATUS KAMU \n Add my owner ID http://line.me/ti/p/~enaksusumm",
     "detectMention": True,
+    "welcomeMessage": "Selamat datang jangan lupa cek note",
     "autoResponMessage": "Ngapain tag gua woy",
     "responsticker": False,
     "changeGroupPicture": [],
@@ -83,6 +111,7 @@ settings = {
     "autoJoinTicket": True,
     "notifikasi": True,
     "Sider":{},
+    "responMsgPc": "Terimakasih sudah menambahkan saya sebagai temanmu",
     "checkSticker": False,
     "userAgent": [
         "Mozilla/5.0 (X11; U; Linux i586; de; rv:5.0) Gecko/20100101 Firefox/5.0",
@@ -344,86 +373,204 @@ def sendTemplates(to, data):
     print(sendPost)
     return sendPost
 def sendTextTemplate(to, text):
-    data = {
-            "type": "flex",
-            "altText": "ADA PESAN",
-            "contents": {
-  "styles": {
-    "body": {
-      "backgroundColor": "#222222"
-    }
-  },
-  "type": "bubble",
-  "body": {
-    "contents": [
-      {
+  data = {
+    "type": "flex",
+    "altText": "ADA PESAN",
+    "contents": {
+      "type": "bubble",
+      "body": {
+        "type": "box",
+        "layout": "horizontal",
+        "spacing": "md",
         "contents": [
           {
+            "type": "image",
+            "url": "https://i.pinimg.com/564x/59/df/b2/59dfb20c927598089a2b80ae86910a44.jpg",
+            "size": "full",
+            "aspectMode": "cover",
+            "margin": "none",
+            "position": "absolute"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "flex": 2,
             "contents": [
               {
+                "type": "text",
                 "text": text,
-                "size": "md",
-                "margin": "none",
-                "color": "#FFFFFF",
+                "size": "sm",
+                "weight": "bold",
                 "wrap": True,
-                "weight": "regular",
-                "type": "text"
+                "color": "#FFFFFF"
+              }
+            ]
+          }
+        ]
+      },
+      "styles": {
+        "body": {
+          "backgroundColor": "#222222"
+        },
+        "header": {
+          "backgroundColor": "#03f5f1"
+        }
+      },
+    }
+  }
+  cl.postTemplate(to, data)
+
+def sendInfoCorona(to, text):
+  data = {
+    "type": "flex",
+    "altText": "INFO CORONA",
+    "contents": {
+      "type": "bubble",
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "image",
+            "url": "https://i.pinimg.com/564x/59/df/b2/59dfb20c927598089a2b80ae86910a44.jpg",
+            "aspectMode": "cover",
+            "position": "relative",
+            "align": "center",
+            "size": "full"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "KASUS CORONA INDONESIA",
+                "wrap": True,
+                "size": "md",
+                "weight": "bold",
+                "style": "normal",
+                "decoration": "none",
+                "align": "center",
+                "color": "#ffffff"
               }
             ],
+            "position": "absolute",
+            "offsetTop": "15px",
+            "backgroundColor": "#004EFF",
+            "paddingTop": "10px",
+            "paddingBottom": "10px",
+            "width": "100%"
+          },
+          {
             "type": "box",
-            "layout": "baseline"
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "━━━━━━━━━━━━━━━━━━",
+                "color": "#ffffff",
+                "align": "center"
+              },
+              {
+                "type": "text",
+                "text": text,
+                "wrap": True,
+                "color": "#ffffff",
+                "size": "md",
+                "weight": "bold",
+                "offsetStart": "35px"
+              },
+              {
+                "type": "text",
+                "text": "━━━━━━━━━━━━━━━━━━",
+                "color": "#ffffff",
+                "align": "center"
+              }
+            ],
+            "position": "absolute",
+            "offsetBottom": "100px",
+            "spacing": "xs",
+            "width": "100%"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+              {
+                "type": "text",
+                "text": "\"MESKI TIDAK MENJADI\n GARDA TERDEPAN\n\nDENGAN DIRUMAH,\nKITA MENJADI PAHLAWAN\"",
+                "color": "#FFFC00",
+                "size": "sm",
+                "weight": "bold",
+                "style": "italic",
+                "align": "center",
+                "wrap": True
+              }
+            ],
+            "position": "absolute",
+            "paddingBottom": "10px",
+            "offsetEnd": "0px",
+            "offsetBottom": "0px",
+            "offsetStart": "0px"
           }
         ],
-        "type": "box",
-        "layout": "vertical"
+        "position": "relative",
+        "margin": "none",
+        "paddingAll": "0px",
+        "borderWidth": "3px",
+        "borderColor": "#000000",
+        "cornerRadius": "0px"
       }
-    ],
-    "type": "box",
-    "spacing": "md",
-    "layout": "vertical"
+    }
   }
-}
-}
-    cl.postTemplate(to, data)
+  cl.postTemplate(to, data)
 
 def sendTextTemplateMaster(to, text):
     data = {
-            "type": "flex",
-            "altText": "ADA PESAN",
-            "contents": {
-  "type": "bubble",
-  "body": {
-    "type": "box",
-    "layout": "horizontal",
-    "spacing": "md",
-    "contents": [
-      {
-        "type": "box",
-        "layout": "vertical",
-        "flex": 2,
-        "contents": [
-          {
-            "type": "text",
-            "text": text,
-            "size": "sm",
-            "weight": "bold",
-            "wrap": True,
-            "color": "#FFFFFF"
+      "type": "flex",
+      "altText": "ADA PESAN",
+      "contents": {
+        "type": "bubble",
+        "body": {
+          "type": "box",
+          "layout": "horizontal",
+          "spacing": "md",
+          "contents": [
+            {
+              "type": "image",
+              "url": "https://i.pinimg.com/564x/59/df/b2/59dfb20c927598089a2b80ae86910a44.jpg",
+              "size": "full",
+              "aspectMode": "cover",
+              "margin": "none",
+              "position": "absolute"
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "flex": 2,
+              "contents": [
+                {
+                  "type": "text",
+                  "text": text,
+                  "size": "sm",
+                  "weight": "bold",
+                  "wrap": True,
+                  "color": "#FFFFFF"
+                }
+              ]
+            }
+          ]
+        },
+        "styles": {
+          "body": {
+            "backgroundColor": "#222222"
+          },
+          "header": {
+            "backgroundColor": "#03f5f1"
           }
-        ]
+        },
       }
-    ]
-  },
-  "styles": {
-    "body": {
-      "backgroundColor": "#222222"
-    },
-    "header": {
-      "backgroundColor": "#03f5f1"
     }
-  },
-}
-}
     cl.postTemplate(to, data)
 
 def sendStickerTemplate(to, text):
@@ -456,7 +603,7 @@ def clBot(op):
         if op.type == 5:
             print ("[ 5 ] NOTIFIED ADD CONTACT")
             if settings["autoAdd"] == True:
-                cl.sendMessage(op.param1, "Halo {} terimakasih telah menambahkan saya sebagai teman :D".format(str(cl.getContact(op.param1).displayName)))
+                cl.sendMessage(op.param1, "Terimakasih telah menambahkan saya sebagai teman :D")
         if op.type == 13:
             print ("[ 13 ] NOTIFIED INVITE GROUP")
             group = cl.getGroup(op.param1)
@@ -466,15 +613,25 @@ def clBot(op):
             print ("[ 24 ] NOTIFIED LEAVE ROOM")
             if settings["autoLeave"] == True:
                 cl.leaveRoom(op.param1)
-        if op.type == 26:
-          msg = op.message
-          text = msg.text
-          msg_id = msg.id
-          receiver = msg.to
-          sender = msg._from
-          if msg.contentType == 0:
-            if text.lower().startswith("Hai"):
-              cl.sendMessage(to, "Iyaa hai juga")
+        # if op.type == 26: #INI PESAN PUBLIC
+        #   print ("[ 26 ] PUBLIC MESSAGE")
+        #   msg = op.message
+        #   text = msg.text
+        #   msg_id = msg.id
+        #   receiver = msg.to
+        #   sender = msg._from
+        #   if msg.toType == 0:
+        #       if sender != cl.profile.mid:
+        #           to = sender
+        #       else:
+        #           to = receiver
+        #   else:
+        #       to = receiver
+        #   if msg.contentType == 0:
+        #     if text is None:
+        #       return
+        #       if text.lower() == 'PUBLIC':
+        #         cl.sendMessage(to, "PUBLIC PESAN")
         if op.type == 25:
             print ("[ 25 ] SEND MESSAGE")
             msg = op.message
@@ -493,59 +650,240 @@ def clBot(op):
                 if text is None:
                     return
                 if text.lower() == 'help':
-                  helpMessage = "╔════[ MENU HELP ]" + "\n" + \
-                                "╠ Restart" + "\n" + \
-                                "╠ Runtime" + "\n" + \
-                                "╠ Speed" + "\n" + \
-                                "╠ Status" + "\n" + \
-                                "╠ AllStatus 「On/Off」" + "\n" + \
-                                "╠ Broadcast 「On/Off」" + "\n" + \
-                                "╠ AutoAdd 「On/Off」" + "\n" + \
-                                "╠ AutoJoin 「On/Off」" + "\n" + \
-                                "╠ AutoJoinTicket 「On/Off」" + "\n" + \
-                                "╠ AutoLeave 「On/Off」" + "\n" + \
-                                "╠ AutoRead 「On/Off」" + "\n" + \
-                                "╠ Notif 「On/Off」" + "\n" + \
-                                "╠ CheckSticker 「On/Off」" + "\n" + \
-                                "╠ Mimic 「On/Off」" + "\n" + \
-                                "╠ Cname 「Your name」" + "\n" + \
-                                "╠ CPme" + "\n" + \
-                                "╠ Me" + "\n" + \
-                                "╠ MyMid" + "\n" + \
-                                "╠ MyName" + "\n" + \
-                                "╠ MyBio" + "\n" + \
-                                "╠ MyPicture" + "\n" + \
-                                "╠ MyVideoProfile" + "\n" + \
-                                "╠ MyCover" + "\n" + \
-                                "╠ StealContact 「Mention」" + "\n" + \
-                                "╠ StealMid 「Mention」" + "\n" + \
-                                "╠ StealName 「Mention」" + "\n" + \
-                                "╠ StealBio 「Mention」" + "\n" + \
-                                "╠ StealPicture 「Mention」" + "\n" + \
-                                "╠ StealVideoProfile 「Mention」" + "\n" + \
-                                "╠ StealCover 「Mention」" + "\n" + \
-                                "╠ Broadcast 「Text」" + "\n" + \
-                                "╠ Invite 「ID Line」" + "\n" + \
-                                "╠ Friendlist" + "\n" + \
-                                "╠ CGname 「Text」" + "\n" + \
-                                "╠ CPgroup" + "\n" + \
-                                "╠ Gcreator" + "\n" + \
-                                "╠ GId" + "\n" + \
-                                "╠ GName" + "\n" + \
-                                "╠ GPict" + "\n" + \
-                                "╠ GList" + "\n" + \
-                                "╠ GMemberList" + "\n" + \
-                                "╠ GInfo" + "\n" + \
-                                "╠ QR" + "\n" + \
-                                "╠ QR 「On/Off」" + "\n" + \
-                                "╠ Tagall" + "\n" + \
-                                "╠ Cancelall" + "\n" + \
-                                "╠ Keluar" + "\n" + \
-                                "╠ MimicList" + "\n" + \
-                                "╠ MimicAdd 「Mention」" + "\n" + \
-                                "╠ MimicDel 「Mention」" + "\n" + \
-                                "╚══════════════════"
-                  cl.sendMessage(to, helpMessage)
+                  helpMessage = {
+                    "type": "carousel",
+                    "contents": [
+                      {
+                        "type": "bubble",
+                        "body": {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "image",
+                              "url": "https://i.pinimg.com/originals/ab/6c/ec/ab6ceca46ed88fccb12154f739a44b4d.jpg",
+                              "size": "full",
+                              "aspectMode": "cover",
+                              "aspectRatio": "1280:1920"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": "HELP MENU",
+                                  "color": "#ffffff",
+                                  "align": "center",
+                                  "size": "lg",
+                                  "offsetTop": "3px",
+                                  "weight": "bold"
+                                }
+                              ],
+                              "position": "absolute",
+                              "offsetTop": "18px",
+                              "backgroundColor": "#004EFF",
+                              "width": "100%",
+                              "borderColor": "#ffffff",
+                              "paddingAll": "10px"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": " ✦ Runtime\n ✦ Speed\n ✦ Status\n ✦ AllStatus 「On/Off」\n ✦ Broadcast 「On/Off」\n ✦ AutoAdd 「On/Off」\n ✦ AutoJoin 「On/Off」\n ✦ AutoJoinTicket 「On/Off」\n ✦ AutoLeave 「On/Off」\n ✦ AutoRead 「On/Off」\n ✦ AutoResponPC 「On/Off」\n ✦ Notif 「On/Off」\n",
+                                  "color": "#ffffff",
+                                  "size": "md",
+                                  "weight": "bold",
+                                  "wrap": True
+                                }
+                              ],
+                              "offsetBottom": "300px",
+                              "offsetStart": "15px"
+                            }
+                          ],
+                          "paddingAll": "0px",
+                          "height": "400px",
+                          "borderWidth": "3px",
+                          "borderColor": "#000000"
+                        }
+                      },
+                      {
+                        "type": "bubble",
+                        "body": {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "image",
+                              "url": "https://i.pinimg.com/originals/ab/6c/ec/ab6ceca46ed88fccb12154f739a44b4d.jpg",
+                              "size": "full",
+                              "aspectMode": "cover",
+                              "aspectRatio": "1280:1920"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": "HELP MENU",
+                                  "color": "#ffffff",
+                                  "align": "center",
+                                  "size": "lg",
+                                  "offsetTop": "3px",
+                                  "weight": "bold"
+                                }
+                              ],
+                              "position": "absolute",
+                              "offsetTop": "18px",
+                              "backgroundColor": "#004EFF",
+                              "width": "100%",
+                              "borderColor": "#ffffff",
+                              "paddingAll": "10px"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": " ✦ CheckSticker 「On/Off」\n ✦ Mimic 「On/Off」\n ✦ Cname 「Your name」\n ✦ CPme\n ✦ Me\n ✦ MyMid\n ✦ MyName\n ✦ MyBio\n ✦ MyPicture\n ✦ MyVideoProfile\n ✦ MyCover\n ✦ StealContact 「Mention」\n",
+                                  "color": "#ffffff",
+                                  "size": "md",
+                                  "weight": "bold",
+                                  "wrap": True
+                                }
+                              ],
+                              "offsetBottom": "300px",
+                              "offsetStart": "15px"
+                            }
+                          ],
+                          "paddingAll": "0px",
+                          "height": "400px",
+                          "borderWidth": "3px",
+                          "borderColor": "#000000"
+                        }
+                      },
+                      {
+                        "type": "bubble",
+                        "body": {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "image",
+                              "url": "https://i.pinimg.com/originals/ab/6c/ec/ab6ceca46ed88fccb12154f739a44b4d.jpg",
+                              "size": "full",
+                              "aspectMode": "cover",
+                              "aspectRatio": "1280:1920"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": "HELP MENU",
+                                  "color": "#ffffff",
+                                  "align": "center",
+                                  "size": "lg",
+                                  "offsetTop": "3px",
+                                  "weight": "bold"
+                                }
+                              ],
+                              "position": "absolute",
+                              "offsetTop": "18px",
+                              "backgroundColor": "#004EFF",
+                              "width": "100%",
+                              "borderColor": "#ffffff",
+                              "paddingAll": "10px"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": " ✦ StealMid 「Mention」\n ✦ StealName 「Mention」\n ✦ StealBio 「Mention」\n ✦ StealPicture 「Mention」\n ✦ StealVideoProfile 「Mention」\n ✦ StealCover 「Mention」\n ✦ Broadcast 「Text」\n ✦ Invite 「ID Line」\n ✦ Friendlist\n ✦ CGname 「Text」\n ✦ CPgroup\n ✦ Gcreator\n",
+                                  "color": "#ffffff",
+                                  "size": "md",
+                                  "weight": "bold",
+                                  "wrap": True
+                                }
+                              ],
+                              "offsetBottom": "300px",
+                              "offsetStart": "15px"
+                            }
+                          ],
+                          "paddingAll": "0px",
+                          "height": "400px",
+                          "borderWidth": "3px",
+                          "borderColor": "#000000"
+                        }
+                      },
+                      {
+                        "type": "bubble",
+                        "body": {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "image",
+                              "url": "https://i.pinimg.com/originals/ab/6c/ec/ab6ceca46ed88fccb12154f739a44b4d.jpg",
+                              "size": "full",
+                              "aspectMode": "cover",
+                              "aspectRatio": "1280:1920"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": "HELP MENU",
+                                  "color": "#ffffff",
+                                  "align": "center",
+                                  "size": "lg",
+                                  "offsetTop": "3px",
+                                  "weight": "bold"
+                                }
+                              ],
+                              "position": "absolute",
+                              "offsetTop": "18px",
+                              "backgroundColor": "#004EFF",
+                              "width": "100%",
+                              "borderColor": "#ffffff",
+                              "paddingAll": "10px"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": " ✦ GId\n ✦ GName\n ✦ GPict\n ✦ GList\n ✦ GMemberList\n ✦ GInfo\n ✦ QR\n ✦ QR 「On/Off」\n ✦ Tagall\n ✦ Cancelall\n ✦ Keluar\n ✦ Kick 「Mention」",
+                                  "color": "#ffffff",
+                                  "size": "md",
+                                  "weight": "bold",
+                                  "wrap": True
+                                }
+                              ],
+                              "offsetBottom": "300px",
+                              "offsetStart": "15px"
+                            }
+                          ],
+                          "paddingAll": "0px",
+                          "height": "400px",
+                          "borderWidth": "3px",
+                          "borderColor": "#000000"
+                        }
+                      }
+                    ]
+                  }                  
+                  cl.postFlex(to, helpMessage)
                 elif msg.text.lower().startswith("scall "):
                   if msg.toType == 2:
                       sep = text.split(" ")
@@ -626,7 +964,7 @@ def clBot(op):
                       }
                     }
                     cl.postTemplate(to, data)
-                elif "hai" in msg.text.lower():
+                elif "halo" in msg.text.lower():
                   url = "https://game.linefriends.com/jbp-lcs-ranking/lcs/sendMessage"
                   to = msg.to
                   data = {
@@ -647,9 +985,56 @@ def clBot(op):
                     }
                   }
                   cl.postTemplate(to, data)
+                elif text.lower() == 'meow':
+                  cl.sendMessage(to, "Tunggu sebentar...")
+                  with requests.session() as web:
+                    r = web.get("https://aws.random.cat/meow")
+                    data = r.text
+                    data = json.loads(data)
+                    cl.sendImageWithURL(to, data["file"])
+                elif text.lower() == 'creator':
+                  dataProfile = [
+                    {
+                      "type": "bubble",
+                      "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                          {
+                            "type": "button",
+                            "action": {
+                              "type": "message",
+                              "label": "TEST",
+                              "text": "haloo"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                  main = {
+                    "type": "flex",
+                    "altText": "Love Yepz",
+                    "contents": {
+                        "type": "carousel",
+                        "contents": dataProfile
+                    }
+                  }
+                  cl.postTemplate(to, main)
+                elif text.lower() == "info corona":
+                  cl.sendMessage(to, "Tunggu sebentar...")
+                  with requests.session() as web:
+                    r = web.get("https://api.kawalcorona.com/indonesia/")
+                    data = r.text
+                    data = json.loads(data)
+                    ret_ = "Positif : " + data[0]["positif"] + " Orang"
+                    ret_ += "\nSembuh : " + data[0]["sembuh"] + " Orang"
+                    ret_ += "\nDirawat : " + data[0]["dirawat"] + " Orang"
+                    ret_ += "\nMeninggal : " + data[0]["meninggal"] + " Orang"
+                    sendInfoCorona(to, str(ret_))
                 elif text.lower() == 'dell':
                   cl.removeAllMessages(op.param2)
-                  cl.sendMessage(to, "Menghapus Chat")
+                  cl.sendMessage(to, "Chat dibersihkan")
                 elif text.lower().startswith("cname"):
                   sep = text.split(" ")
                   string = text.replace(sep[0] + " ", "")
@@ -719,11 +1104,23 @@ def clBot(op):
                       num=(num+1)
                   msgs+="\n╚══[ Finish ]\nTotal Grup : %i" % len(kontak)
                   cl.sendMessage(msg.to, msgs)
-                elif msg.text.lower().startswith("keluar"):
+                elif text.lower() == "keluar":
                   if msg.toType == 2:
                     group = cl.getGroup(to)
                     cl.sendMessage(to, "Dadah guys!")
                     cl.leaveGroup(to)
+                elif text.lower() == "message":
+                  sendTextTemplate(to,"WELCOME MESSAGE\n" + "━ " + settings["welcomeMessage"] + "\n\nAUTO RESPON MESSAGE\n" + "━ " + settings["responMsgPc"])
+                elif msg.text.lower().startswith("wctext "):
+                  sep = text.split(" ")
+                  pesan = text.replace(sep[0] + " ", "")
+                  settings["welcomeMessage"] = settings["welcomeMessage"].replace(settings["welcomeMessage"], str(pesan))
+                  cl.sendMessage(to, "Welcome message berhasil diubah")
+                elif msg.text.lower().startswith("respontext "):
+                  sep = text.split(" ")
+                  pesan = text.replace(sep[0] + " ", "")
+                  settings["responMsgPc"] = settings["responMsgPc"].replace(settings["responMsgPc"], str(pesan))
+                  cl.sendMessage(to, "Auto respon berhasil diubah")
                 elif msg.text.lower().startswith("invite "):
                   sep = text.split(" ")
                   nick = text.replace(sep[0] + " ", "")
@@ -791,6 +1188,16 @@ def clBot(op):
                     for mi_d in settings["blacklist"]:
                       mc += "\n╠ " +cl.getContact(mi_d).displayName
                     cl.sendMessage(msg.to,mc + "\n╚══[ Finish ]")
+                elif msg.text.lower().startswith("pranksms "):
+                  sep = msg.text.split(" ")
+                  nomor = text.replace(sep[0] + " ","")
+                  r = requests.get("http://apisora2.herokuapp.com/prank/sms/?no={}".format(urllib.parse.quote(nomor)))
+                  data = r.text
+                  data = json.loads(data)
+                  ret_ = "「 Prangked Sms 」"
+                  ret_ += "\n• Status : {}".format(str(data["status"]))
+                  ret_ += "\n• Tujuan "+str(data["result"])
+                  cl.sendMessage(msg.to, str(ret_))
                 elif text.lower() == 'speed':
                   start = time.time()
                   cl.sendMessage(to, "Tunggu sebentar...")
@@ -824,30 +1231,41 @@ def clBot(op):
                       ret_ += "\n╠ Group : {}".format(str(len(grouplist)))
                       ret_ += "\n╠ Friend : {}".format(str(len(contactlist)))
                       ret_ += "\n╠ Blocked : {}".format(str(len(blockedlist)))
-                      ret_ += "\n╠ Runtime : {}".format(str(runtime))
-                      ret_ += "\n╚ Creator : {}".format(creator.displayName)
+                      ret_ += "\n╚ Runtime : {}".format(str(runtime))
                       sendTextTemplateMaster(to, str(ret_))
                   except Exception as e:
                       cl.sendMessage(msg.to, str(e))
                 elif text.lower() == 'status':
                   try:
+                      timeNow = time.time()
+                      runtime = timeNow - botStart
+                      runtime = format_timespan(runtime)
+                      start = time.time()
+                      cl.sendMessage(to, "Processing...")
+                      elapsed_time = time.time() - start
                       ret_ = "╔══[ STATUS BOT ]"
-                      if settings["autoAdd"] == True: ret_ += "\n╠[ ON ] Auto Add"
-                      else: ret_ += "\n╠[ OFF ] Auto Add"
-                      if settings["autoJoin"] == True: ret_ += "\n╠[ ON ] Auto Join"
-                      else: ret_ += "\n╠[ OFF ] Auto Join"
-                      if settings["autoJoinTicket"] == True: ret_ += "\n╠[ ON ] Auto Join Ticket"
-                      else: ret_ += "\n╠[ OFF ] Auto Join Ticket"
-                      if settings["autoLeave"] == True: ret_ += "\n╠[ ON ] Auto Leave"
-                      else: ret_ += "\n╠[ OFF ] Auto Leave"
-                      if settings["autoRead"] == True: ret_ += "\n╠[ ON ] Auto Read"
-                      else: ret_ += "\n╠[ OFF ] Auto Read"
-                      if settings["notifikasi"] == True: ret_ += "\n╠[ ON ] Notif"
-                      else: ret_ += "\n╠[ OFF ] Notif"
-                      if settings["detectMention"] == True: ret_ += "\n╠[ ON ] Detect Mention"
-                      else: ret_ += "\n╠[ OFF ] Detect Mention"
-                      if settings["broadcast"] == True: ret_ += "\n╠[ ON ] Group Broadcast"
-                      else: ret_ += "\n╠[ OFF ] Group Broadcast"
+                      ret_ += "\n╠ Runtime : {}".format(str(runtime))
+                      ret_ += "\n╠ Speed : {} detik".format(str(elapsed_time))
+                      if settings["autoAdd"] == True: ret_ += "\n╠ [ ON ] Auto Add"
+                      else: ret_ += "\n╠ [ OFF ] Auto Add"
+                      if settings["autoJoin"] == True: ret_ += "\n╠ [ ON ] Auto Join"
+                      else: ret_ += "\n╠ [ OFF ] Auto Join"
+                      if settings["autoJoinTicket"] == True: ret_ += "\n╠ [ ON ] Auto Join Ticket"
+                      else: ret_ += "\n╠ [ OFF ] Auto Join Ticket"
+                      if settings["autoLeave"] == True: ret_ += "\n╠ [ ON ] Auto Leave"
+                      else: ret_ += "\n╠ [ OFF ] Auto Leave"
+                      if settings["autoRead"] == True: ret_ += "\n╠ [ ON ] Auto Read"
+                      else: ret_ += "\n╠ [ OFF ] Auto Read"
+                      if settings["notifikasi"] == True: ret_ += "\n╠ [ ON ] Notif"
+                      else: ret_ += "\n╠ [ OFF ] Notif"
+                      if settings["detectMention"] == True: ret_ += "\n╠ [ ON ] Detect Mention"
+                      else: ret_ += "\n╠ [ OFF ] Detect Mention"
+                      if settings["broadcast"] == True: ret_ += "\n╠ [ ON ] Group Broadcast"
+                      else: ret_ += "\n╠ [ OFF ] Group Broadcast"
+                      if settings["autoResponPc"] == True: ret_ += "\n╠ [ ON ] Auto Respon Chat"
+                      else: ret_ += "\n╠ [ OFF ] Auto Respon Chat"
+                      if settings["changePicture"] == True: ret_ += "\n╠ [ ON ] Change PP"
+                      else: ret_ += "\n╠ [ OFF ] Change PP"
                       ret_ += "\n╚══[ STATUS BOT ]"
                       cl.sendMessage(to, str(ret_))
                   except Exception as e:
@@ -864,6 +1282,12 @@ def clBot(op):
                 elif text.lower() == 'autojoin off':
                   settings["autoJoin"] = False
                   cl.sendMessage(to, "Menonaktifkan Auto Join")
+                elif text.lower() == 'autoresponpc on':
+                  settings["autoResponPc"] = True
+                  cl.sendMessage(to, "Auto Respon PC On")
+                elif text.lower() == 'autoresponpc off':
+                  settings["autoResponPc"] = False
+                  cl.sendMessage(to, "Auto Respon PC Off")
                 elif text.lower() == 'broadcast on':
                   settings["broadcast"] = True
                   cl.sendMessage(to, "Mengaktifkan Group Broadcast")
@@ -906,6 +1330,12 @@ def clBot(op):
                 elif text.lower() == 'detectmention off':
                   settings["datectMention"] = False
                   cl.sendMessage(to, "Menonaktifkan Detect Mention")
+                elif text.lower() == 'cpme on':
+                  settings["changePicture"] = True
+                  cl.sendMessage(to, "Change Picture Profile On")
+                elif text.lower() == 'cpme off':
+                  settings["changePicture"] = False
+                  cl.sendMessage(to, "Change Picture Profile Off")
                 elif text.lower() == 'allstatus on':
                   settings["notifikasi"] = True
                   settings["autoAdd"] = True
@@ -915,7 +1345,8 @@ def clBot(op):
                   settings["datectMention"] = True
                   settings["broadcast"] = True
                   settings["autoJoinTicket"] = True
-                  settings["addbots"] = True
+                  settings["autoResponPc"] = True
+                  settings["changePicture"] = True
                   cl.sendMessage(to, "Allstatus bot mode on")
                 elif text.lower() == 'allstatus off':
                   settings["notifikasi"] = False
@@ -926,7 +1357,8 @@ def clBot(op):
                   settings["datectMention"] = False
                   settings["broadcast"] = False
                   settings["autoJoinTicket"] = False
-                  settings["addbots"] = False
+                  settings["autoResponPc"] = False
+                  settings["changePicture"] = False
                   cl.sendMessage(to, "Allstatus bot mode on")
                 elif text.lower() == 'mycontact':
                   sendMessageWithMention(to, clMID)
@@ -1678,153 +2110,90 @@ def clBot(op):
                   else :
                     sendTextTemplate(msg.to, "The bot has been mmade with DPKTEAMheader")
                     cl.sendMessage(msg.to, str(res.authToken))
-                elif msg.text.lower().startswith("ytsearch "):
-                    if msg.toType == 2:
-                                sep = text.split(" ")
-                                search = text.replace(sep[0] + " ","")
-                                r = requests.get("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q={}&type=video&key=AIzaSyAF-_5PLCt8DwhYc7LBskesUnsm1gFHSP8".format(str(search)))
-                                data = r.text
-                                a = json.loads(data)
-                                if a["items"] != []:
-                                    ret_ = []
-                                    yt = []
-                                    for music in a["items"]:
-                                        ret_.append({
-                                            "type": "bubble",
-                                            "styles": {
-                                                "header": {
-                                                    "backgroundColor": "#0000FF"
-                                                },
-                                                "body": {
-                                                   "backgroundColor": "#222222",
-                                                   "separator": True,
-                                                   "separatorColor": "#FF0000"
-                                                },
-                                                "footer": {
-                                                    "backgroundColor": "#FF7F50",
-                                                    "separator": True,
-                                                   "separatorColor": "#FF0000"
-                                               }
-                                            },
-                                            "hero": {
-                                                "type": "image",
-                                                "url": "https://i.ytimg.com/vi/{}/maxresdefault.jpg".format(music['id']['videoId']),
-                                                "size": "full",
-                                                "aspectRatio": "20:13",
-                                                "aspectMode": "cover",
-                                                "action": {
-                                                    "type": "uri",
-                                                    "uri": "line://nv/profilePopup/mid=u26379f895f9a0af38a66dbc0e76f663c"
-                                                }
-                                            },
-                                            "body": {
-                                                "type": "box",
-                                                "spacing": "md",
-                                                "layout": "horizontal",
-                                                "contents": [{
-                                                    "type": "box",
-                                                    "spacing": "none",
-                                                    "flex": 1,
-                                                    "layout": "vertical",
-                                                    "contents": [{
-                                                        "type": "image",
-                                                        "url": "https://cdn2.iconfinder.com/data/icons/social-icons-circular-color/512/youtube-512.png",
-                                                        "aspectMode": "cover",
-                                                        "gravity": "bottom",
-                                                        "size": "sm",
-                                                        "aspectRatio": "1:1",
-                                                        "action": {
-                                                          "type": "uri",
-                                                          "uri": "https://www.youtube.com/watch?v=%s" % music['id']['videoId']
-                                                        }
-                                                    }]
-                                                }, {
-                                                    "type": "separator",
-                                                    "color": "#FF0000"
-                                                }, {
-                                                    "type": "box",
-                                                    "contents": [{
-                                                        "type": "text",
-                                                        "text": "JUDUL",
-                                                        "color": "#00BFFF",
-                                                        "size": "md",
-                                                        "weight": "bold",
-                                                        "flex": 1,
-                                                        "gravity": "top"
-                                                    }, {
-                                                        "type": "separator",
-                                                        "color": "#FF0000"
-                                                    }, {
-                                                        "type": "text",
-                                                        "text": "%s" % music['snippet']['title'],
-                                                        "color": "#00FF00",
-                                                        "size": "sm",
-                                                        "weight": "bold",
-                                                        "flex": 3,
-                                                        "wrap": True,
-                                                        "gravity": "top"
-                                                    }],
-                                                    "flex": 2,
-                                                    "layout": "vertical"
-                                                }]
-                                            },
-                                            "footer": {
-                                                "type": "box",
-                                                "layout": "vertical",
-                                                "contents": [{
-                                                    "type": "box",
-                                                    "layout": "horizontal",
-                                                    "contents": [{
-                                                        "type": "button",
-                                                        "flex": 2,
-                                                        "style": "primary",
-                                                        "color": "#1E90FF",
-                                                        "height": "sm",
-                                                        "action": {
-                                                            "type": "uri",
-                                                            "label": "Youtube",
-                                                            "uri": "https://www.youtube.com/watch?v={}".format(str(music['id']['videoId']))
-                                                        }
-                                                    }, {
-                                                        "flex": 3,
-                                                        "type": "button",
-                                                        "margin": "sm",
-                                                        "style": "primary",
-                                                        "color": "#7B68EE",
-                                                        "height": "sm",
-                                                        "action": {
-                                                            "type": "uri",
-                                                            "label": "Mp3",
-                                                            "uri": "line://app/1602687308-GXq4Vvk9?type=text&text=mp3%20https://www.youtube.com/watch?v={}".format(str(music['id']['videoId']))
-                                                        }
-                                                    }]
-                                                }, {
-                                                    "type": "button",
-                                                    "margin": "sm",
-                                                    "style": "primary",
-                                                    "color": "#191970",
-                                                    "height": "sm",
-                                                    "action": {
-                                                        "type": "uri",
-                                                        "label": "Mp4",
-                                                        "uri": "line://app/1602687308-GXq4Vvk9?type=text&text=youtubemp4%20https://www.youtube.com/watch?v={}".format(str(music['id']['videoId']))
-                                                    }
-                                                }]
-                                            }
+                elif msg.text.lower().startswith("red "):
+                  if msg.toType == 2:
+                    cl.sendMessage(to, "Processing...")
+                    sep = text.split(" ")
+                    search = text.replace(sep[0] + " ","")
+                    r = requests.get("https://beta.moe.team/api/redtube/?apikey=IUV3RXZcPJ2L1HqTKSICmOhTqxlVrwDWkG8eu2ywvYy1UAjIHClvvFkChcAkXE6P&type=search&q="+str(search))
+                    data = r.text
+                    a = json.loads(data)
+                    if a["code"] == 200:
+                      result = a["result"]
+                      k = len(result)//5
+                      for thumb in range(k+1):
+                        data = [
+                          {
+                            "type": "bubble",
+                            "hero": {
+                              "type": "image",
+                              "url": "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+                              "size": "full",
+                              "aspectRatio": "20:13",
+                              "aspectMode": "cover",
+                              "action": {
+                                "type": "uri",
+                                "uri": "http://linecorp.com/"
+                              }
+                            },
+                            "body": {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "text": "Brown Cafe",
+                                  "weight": "bold",
+                                  "size": "xl"
+                                },
+                                {
+                                  "type": "box",
+                                  "layout": "vertical",
+                                  "margin": "lg",
+                                  "spacing": "sm",
+                                  "contents": [
+                                    {
+                                      "type": "box",
+                                      "layout": "baseline",
+                                      "spacing": "sm",
+                                      "contents": [
+                                        {
+                                          "type": "text",
+                                          "text": "URL",
+                                          "color": "#aaaaaa",
+                                          "size": "sm",
+                                          "flex": 1
+                                        },
+                                        {
+                                          "type": "text",
+                                          "text": "Miraina Tower, 4-1-6 Shinjuku, Tokyo",
+                                          "wrap": true,
+                                          "color": "#666666",
+                                          "size": "sm",
+                                          "flex": 5
                                         }
-                                    )
-                                        yt.append('https://www.youtube.com/watch?v=' +music['id']['videoId'])
-                                    k = len(ret_)//10
-                                    for aa in range(k+1):
-                                        data = {
-                                            "type": "flex",
-                                            "altText": "Youtube",
-                                            "contents": {
-                                                "type": "carousel",
-                                                "contents": ret_[aa*10 : (aa+1)*10]
-                                            }
-                                        }
-                                        cl.postTemplate(to, data)
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                        result = {
+                          "type": "flex",
+                          "altText": "Ada pesan",
+                          "contents": {
+                              "type": "carousel",
+                              "contents": data
+                          }
+                        }
+                        cl.postTemplate(to, main)
+                        cl.sendImageWithURL(to, result[thumb]["video"]["thumb"])
+                        cl.sendMessage(to, "[TITLE]\n"+result[thumb]["video"]["title"]+"\n\n[LINK]\n"+result[thumb]["video"]["url"])
+                      cl.sendMessage(to, "════ FINISH ════")
+                    else :
+                      cl.sendMessage(to, "GAGAL")
                 elif text.lower() == 'gcreator':
                     group = cl.getGroup(to)
                     GS = group.creator.mid
@@ -1879,19 +2248,30 @@ def clBot(op):
                     mentionees = mention['MENTIONEES']
                     for mention in mentionees:
                         cl.kickoutFromGroup(msg.to,[mention['M']])
-                elif text.lower().startswith("addadmin "):
+                elif text.lower().startswith("adminadd "):
                   key = eval(msg.contentMetadata["MENTION"])
                   key["MENTIONEES"][0]["M"]
                   targets = []
                   for x in key["MENTIONEES"]:
                     targets.append(x["M"])
                   for target in targets:
+                    settings["admin"][target] = True
+                    admin.append(target)
+                    sendTextTemplate(msg.to,"Berhasil menambahkan admin ")
+                elif text.lower().startswith("admindel "):
+                  targets = []
+                  key = eval(msg.contentMetadata["MENTION"])
+                  key["MENTIONEES"][0]["M"]
+                  for x in key["MENTIONEES"]:
+                    targets.append(x["M"])
+                  for target in targets:
                     try:
-                      settings["admin"][target] = True
-                      admin.append(target)
-                      cl.sendMessage(msg.to,"Berhasil menambahkan admin ")
+                      del settings["admin"][target]
+                      sendTextTemplate(msg.to,"Admin dihapuskan!")
+                      break
                     except:
-                      pass
+                      sendTextTemplate(msg.to,"Deleted Target Fail !")
+                      break
                 elif text.lower() == 'ginfo':
                     group = cl.getGroup(to)
                     try:
@@ -1941,7 +2321,7 @@ def clBot(op):
                   elif settings["broadcast"] == True:
                     for manusia in orang:
                       sendTextTemplate(manusia, str(pesan))
-                    cl.sendMessage(to, "Broadcast terkirim ke " + format(str(len(orang))) + " kontak")
+                    cl.sendMessage(to, "[ Broadcast ] terkirim ke " + format(str(len(orang))) + " kontak")
                 elif msg.text.lower() == 'adminlist':
                   if settings["admin"] == {}:
                     cl.sendMessage(msg.to,"Admin kosong")
@@ -1960,6 +2340,13 @@ def clBot(op):
                           no += 1
                       ret_ += "\n╚══[ Total {} ]".format(str(len(group.members)))
                       sendTextTemplate(to, str(ret_))
+                elif text.lower() == 'addall':
+                  if msg.toType == 2:
+                      group = cl.getGroup(to)
+                      no = 0 + 1
+                      for mem in group.members:
+                        cl.findAndAddContactsByMid(mem.mid)
+                      sendTextTemplate(to, "Add members berhasil")
                 elif text.lower() == 'glist':
                   groups = cl.groups
                   ret_ = "╔══[ Group List ]"
@@ -2000,22 +2387,22 @@ def clBot(op):
                        if settings["lang"] == "JP":
                            sendTextTemplate(msg.to,"notif mode off")
                 elif text.lower() == 'tagall':
-                            if msg.toType == 0:
-                                sendMention(to, to, "", "")
-                            elif msg.toType == 2:
-                                group = cl.getGroup(to)
-                                midMembers = [contact.mid for contact in group.members]
-                                midSelect = len(midMembers)//20
-                                for mentionMembers in range(midSelect+1):
-                                    no = 0
-                                    ret_ = "╔══[ Mention Members ]"
-                                    dataMid = []
-                                    for dataMention in group.members[mentionMembers*20 : (mentionMembers+1)*20]:
-                                        dataMid.append(dataMention.mid)
-                                        no += 1
-                                        ret_ += "\n╠ {}. @!".format(str(no))
-                                    ret_ += "\n╚══[ Total {} Members]".format(str(len(dataMid)))
-                                    cl.sendMention(msg.to, ret_, dataMid)
+                  if msg.toType == 0:
+                      sendMention(to, to, "", "")
+                  elif msg.toType == 2:
+                      group = cl.getGroup(to)
+                      midMembers = [contact.mid for contact in group.members]
+                      midSelect = len(midMembers)//20
+                      for mentionMembers in range(midSelect+1):
+                        no = 0
+                        ret_ = "╔══[ Mention Members ]"
+                        dataMid = []
+                        for dataMention in group.members[mentionMembers*20 : (mentionMembers+1)*20]:
+                          dataMid.append(dataMention.mid)
+                          no += 1
+                          ret_ += "\n╠ {}. @!".format(str(no))
+                        ret_ += "\n╚══[ Total {} Members]".format(str(len(dataMid)))
+                        cl.sendMention(msg.to, ret_, dataMid)
                 elif text.lower() == 'cpme':
                   settings["changePicture"] = True
                   cl.sendMessage(to, "Silahkan kirim gambarnya")
@@ -2024,7 +2411,7 @@ def clBot(op):
                     if to not in settings["changeGroupPicture"]:
                       settings["changeGroupPicture"].append(to)
                     cl.sendMessage(to, "Silahkan kirim gambarnya")
-                elif text.lower() == 'lurking on':
+                elif text.lower() == 'sider on':
                     tz = pytz.timezone("Asia/Jakarta")
                     timeNow = datetime.now(tz=tz)
                     day = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday","Friday", "Saturday"]
@@ -2050,7 +2437,7 @@ def clBot(op):
                             read['ROM'][msg.to] = {}
                             with open('read.json', 'w') as fp:
                                 json.dump(read, fp, sort_keys=True, indent=4)
-                                sendTextTemplate(msg.to,"Lurking already on")
+                                sendTextTemplate(msg.to,"Sider sudah on")
                     else:
                         try:
                             del read['readPoint'][msg.to]
@@ -2066,7 +2453,7 @@ def clBot(op):
                             json.dump(read, fp, sort_keys=True, indent=4)
                             sendTextTemplate(msg.to, "Set reading point:\n" + readTime)
                             
-                elif text.lower() == 'lurking off':
+                elif text.lower() == 'sider off':
                     tz = pytz.timezone("Asia/Jakarta")
                     timeNow = datetime.now(tz=tz)
                     day = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday","Friday", "Saturday"]
@@ -2080,7 +2467,7 @@ def clBot(op):
                         if bln == str(k): bln = bulan[k-1]
                     readTime = hasil + ", " + timeNow.strftime('%d') + " - " + bln + " - " + timeNow.strftime('%Y') + "\nJam : [ " + timeNow.strftime('%H:%M:%S') + " ]"
                     if msg.to not in read['readPoint']:
-                        sendTextTemplate(msg.to,"Lurking already off")
+                        sendTextTemplate(msg.to,"Sider sudah off")
                     else:
                         try:
                             del read['readPoint'][msg.to]
@@ -2090,7 +2477,7 @@ def clBot(op):
                               pass
                         sendTextTemplate(msg.to, "Delete reading point:\n" + readTime)
     
-                elif text.lower() == 'lurking reset':
+                elif text.lower() == 'setsider':
                     tz = pytz.timezone("Asia/Jakarta")
                     timeNow = datetime.now(tz=tz)
                     day = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday","Friday", "Saturday"]
@@ -2112,9 +2499,9 @@ def clBot(op):
                             pass
                         sendTextTemplate(msg.to, "Reset reading point:\n" + readTime)
                     else:
-                        sendTextTemplate(msg.to, "Lurking belum diaktifkan ngapain di reset?")
+                        sendTextTemplate(msg.to, "Sider belum diaktifkan")
                         
-                elif text.lower() == 'lurking':
+                elif text.lower() == 'sider':
                     tz = pytz.timezone("Asia/Jakarta")
                     timeNow = datetime.now(tz=tz)
                     day = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday","Friday", "Saturday"]
@@ -2148,35 +2535,35 @@ def clBot(op):
                             zx = {'S':xlen, 'E':xlen2, 'M':cmem[x].mid}
                             zx2.append(zx)
                             zxc += pesan2
-                        text = xpesan+ zxc + "\n[ Lurking time ]: \n" + readTime
+                        text = xpesan+ zxc + "\n[ Sider time ]: \n" + readTime
                         try:
                             cl.sendMessage(receiver, text, contentMetadata={'MENTION':str('{"MENTIONEES":'+json.dumps(zx2).replace(' ','')+'}')}, contentType=0)
                         except Exception as error:
                             print (error)
                         pass
                     else:
-                        sendTextTemplate(receiver,"ketik[ lurking on ]dulu peak lu")
+                        sendTextTemplate(receiver,"Sider belum diaktifkan")
 
-                elif text.lower() == 'sider on':
-                    try:
-                        del cctv['point'][msg.to]
-                        del cctv['sidermem'][msg.to]
-                        del cctv['cyduk'][msg.to]
-                    except:
-                        pass
-                    cctv['point'][msg.to] = msg.id
-                    cctv['sidermem'][msg.to] = ""
-                    cctv['cyduk'][msg.to]=True 
-                    settings["Sider"] = True
-                    sendTextTemplate(msg.to,"SIDER SUDAH ON")
+                # elif text.lower() == 'sider on':
+                #     try:
+                #         del cctv['point'][msg.to]
+                #         del cctv['sidermem'][msg.to]
+                #         del cctv['cyduk'][msg.to]
+                #     except:
+                #         pass
+                #     cctv['point'][msg.to] = msg.id
+                #     cctv['sidermem'][msg.to] = ""
+                #     cctv['cyduk'][msg.to]=True 
+                #     settings["Sider"] = True
+                #     sendTextTemplate(msg.to,"SIDER SUDAH ON")
 
-                elif text.lower() == 'sider off':
-                    if msg.to in cctv['point']:
-                       cctv['cyduk'][msg.to]=False
-                       settings["Sider"] = False
-                       sendTextTemplate(msg.to,"SIDER SUDAH OFF")
-                    else:
-                        sendTextTemplate(msg.to,"SIDER SUDAH OFF")
+                # elif text.lower() == 'sider off':
+                #     if msg.to in cctv['point']:
+                #        cctv['cyduk'][msg.to]=False
+                #        settings["Sider"] = False
+                #        sendTextTemplate(msg.to,"SIDER SUDAH OFF")
+                #     else:
+                #         sendTextTemplate(msg.to,"SIDER SUDAH OFF")
 
                 elif text.lower() == 'kalender':
                     tz = pytz.timezone("Asia/Makassar")
@@ -2206,17 +2593,18 @@ def clBot(op):
                     ret_ += ""
                     sendTextTemplate(to, str(ret_))
             elif msg.contentType == 1:
-              if settings["changePicture"] == True:
-                  path = cl.downloadObjectMsg(msg_id)
-                  settings["changePicture"] = False
-                  cl.updateProfilePicture(path)
-                  sendTextTemplate(to, "Foto profil berhasil diubah")
               if msg.toType == 2:
                 if to in settings["changeGroupPicture"]:
                   path = cl.downloadObjectMsg(msg_id)
                   settings["changeGroupPicture"].remove(to)
                   cl.updateGroupPicture(to, path)
                   sendTextTemplate(to, "Berhasil mengubah foto profil grup.")
+              else:
+                if settings["changePicture"] == True:
+                  path = cl.downloadObjectMsg(msg_id)
+                  settings["changePicture"] = False
+                  cl.updateProfilePicture(path)
+                  sendTextTemplate(to, "Foto profil berhasil diubah")
             elif msg.contentType == 7:
                 if settings["checkSticker"] == True:
                     stk_id = msg.contentMetadata['STKID']
@@ -2238,9 +2626,8 @@ def clBot(op):
             #         Bots.append(msg.contentMetadata["mid"])
             #         settings["addbots"] = True
             #         cl.sendMessage(msg.to,"Berhasil menambahkan ke anggota bot")
-
-        if op.type == 26 or op.type == 25:
-            print ("[ 26 ] RECEIVE MESSAGE")
+        if op.type == 26:
+            print ("[ 26 ] SEND PUBLIC MESSAGE")
             msg = op.message
             text = msg.text
             msg_id = msg.id
@@ -2251,113 +2638,447 @@ def clBot(op):
                     to = sender
                 else:
                     to = receiver
-                    if settings["autoRead"] == True:
-                      cl.sendChatChecked(to, msg_id)
             else:
-                if msg.toType == 0 or msg.toType == 1 or msg.toType == 2:
-                  to = receiver
-                  if settings["autoRead"] == True:
-                      cl.sendChatChecked(to, msg_id)
-                  if text.lower() == 'Hai':
-                    cl.sendMessage(to, "Hai juga")
-                if msg.contentType == 0:
-                  to = receiver
-                  if settings["autoRead"] == True:
-                      cl.sendChatChecked(to, msg_id)
-                  if text is None:
-                      return
-                  if "/ti/g/" in msg.text.lower():
-                    if sender not in admin:
-                      if settings["autoJoinTicket"] == True:
-                          link_re = re.compile(
-                              '(?:line\:\/|line\.me\/R)\/ti\/g\/([a-zA-Z0-9_-]+)?')
-                          links = link_re.findall(text)
-                          n_links = []
-                          for l in links:
-                              if l not in n_links:
-                                  n_links.append(l)
-                          for ticket_id in n_links:
-                              group = cl.findGroupByTicket(ticket_id)
-                              cl.acceptGroupInvitationByTicket(
-                                  group.id, ticket_id)
-                              cl.sendMessage(
-                                  to, "Berhasil masuk ke group %s" % str(group.name))
-                if to in read["readPoint"]:
-                    if sender not in read["ROM"][to]:
-                        read["ROM"][to][sender] = True
-                if sender in settings["mimic"]["target"] and settings["mimic"]["status"] == True and settings["mimic"]["target"][sender] == True:
-                    text = msg.text
-                    if text is not None:
-                        cl.sendMessage(msg.to,text)
-                if sender in settings["blacklist"]== True:
-                    text = msg.text
-                    if text is not None:
-                        cl.sendMessage(msg.to,text)
-                if msg.contentType == 16:
-                    if msg.toType in (2,1,0):
-                        purl = msg.contentMetadata["postEndUrl"].split('userMid=')[1].split('&postId=')
-                        adw = cl.likePost(purl[0], purl[1], random.choice([1001,1002,1003,1004,1005]))
-                        adws = cl.createComment(purl[0], purl[1], settings["commentPost"])
-                        sendTextTemplate(to, "AUTO LIKE SUCCES")
-                if msg.contentType == 0 and sender not in clMID and msg.toType == 2:
-                    if 'MENTION' in msg.contentMetadata.keys()!= None:
-                        names = re.findall(r'@(\w+)', text)
-                        mention = ast.literal_eval(msg.contentMetadata['MENTION'])
-                        mentionees = mention['MENTIONEES']
-                        group = cl.getGroup(to)
-                        for mention in mentionees:
-                            if clMid in mention["M"]:
-                              if settings["detectMention"] == True:
-                                    data = {
-                                                        "type": "flex",
-                                                        "altText": "you kickout from group",
-                                                        "contents": {
-                  "styles": {
-                    "body": {
-                      "backgroundColor": "#0000CD"
-                    }
-                  },
-                  "type": "bubble",
-                  "body": {
-                    "contents": [
-                      {
+                to = receiver
+            if msg.contentType == 0:
+              to = receiver
+              if settings["autoRead"] == True:
+                cl.sendChatChecked(to, msg_id)
+                cl.sendChatChecked(sender, msg_id)
+              if settings["autoResponPc"] == True:
+                if msg.toType == 2:
+                  print("[ INFO ] PESAN GRUP")
+                else:
+                  cl.sendMessage(sender, settings["responMsgPc"])
+              if text is None:
+                return
+              if text.lower() == 'info corona':
+                if sender in settings['admin']:
+                  cl.sendMessage(to, "Tunggu sebentar...")
+                  with requests.session() as web:
+                    r = web.get("https://api.kawalcorona.com/indonesia/")
+                    data = r.text
+                    data = json.loads(data)
+                    ret_ = "Positif : " + data[0]["positif"] + " Orang"
+                    ret_ += "\nSembuh : " + data[0]["sembuh"] + " Orang"
+                    ret_ += "\nDirawat : " + data[0]["dirawat"] + " Orang"
+                    ret_ += "\nMeninggal : " + data[0]["meninggal"] + " Orang"
+                    sendInfoCorona(to, str(ret_))
+              elif text.lower() == 'help':
+                if sender in settings['admin']:
+                  data = {
+                    "type": "flex",
+                    "altText": "ADA PESAN",
+                    "contents": {
+                      "type": "bubble",
+                      "body": {
+                        "type": "box",
+                        "layout": "vertical",
                         "contents": [
                           {
+                            "type": "image",
+                            "url": "https://i.pinimg.com/originals/ab/6c/ec/ab6ceca46ed88fccb12154f739a44b4d.jpg",
+                            "size": "full",
+                            "aspectMode": "cover",
+                            "aspectRatio": "1280:1920"
+                          },
+                          {
+                            "type": "box",
+                            "layout": "vertical",
                             "contents": [
                               {
-                                "text": settings["autoResponMessage"],
-                                "size": "md",
-                                "margin": "none",
-                                "color": "#FFFFFF",
-                                "wrap": True,
-                                "weight": "bold",
-                               "type": "text"
+                                "type": "text",
+                                "text": "ADMIN MENU",
+                                "color": "#ffffff",
+                                "align": "center",
+                                "size": "lg",
+                                "offsetTop": "3px",
+                                "weight": "bold"
                               }
                             ],
+                            "position": "absolute",
+                            "offsetTop": "18px",
+                            "backgroundColor": "#004EFF",
+                            "width": "100%",
+                            "borderColor": "#ffffff",
+                            "paddingAll": "10px"
+                          },
+                          {
                             "type": "box",
-                            "layout": "baseline"
+                            "layout": "vertical",
+                            "contents": [
+                              {
+                                "type": "text",
+                                "text": " ✦ Help\n ✦ Tagall\n ✦ CancelAll\n ✦ Speed\n ✦ StealContact [Mention]\n ✦ StealPicture [Mention]\n ✦ StealVidProfile [Mention]\n ✦ StealCover [Mention]\n ✦ QR\n ✦ QR [On/Off]",
+                                "color": "#ffffff",
+                                "size": "md",
+                                "weight": "bold",
+                                "wrap": True
+                              }
+                            ],
+                            "offsetBottom": "220px",
+                            "offsetStart": "15px"
                           }
                         ],
-                        "type": "box",
-                        "layout": "vertical"
+                        "paddingAll": "0px",
+                        "height": "300px",
+                        "borderWidth": "3px",
+                        "borderColor": "#000000"
                       }
-                    ],
-                    "type": "box",
-                    "spacing": "md",
-                    "layout": "vertical"
+                    }
+                  }
+                  cl.postTemplate(to, data)
+              elif text.lower() == 'tagall':
+                if sender in settings["admin"]:
+                  if msg.toType == 0:
+                    cl.sendMessage(to, "TagAll hanya bisa digrup")
+                  elif msg.toType == 2:
+                    group = cl.getGroup(to)
+                    midMembers = [contact.mid for contact in group.members]
+                    midSelect = len(midMembers)//20
+                    for mentionMembers in range(midSelect+1):
+                      no = 0
+                      ret_ = "╔══[ Mention Members ]"
+                      dataMid = []
+                      for dataMention in group.members[mentionMembers*20 : (mentionMembers+1)*20]:
+                        dataMid.append(dataMention.mid)
+                        no += 1
+                        ret_ += "\n╠ {}. @!".format(str(no))
+                      ret_ += "\n╚══[ Total {} Members]".format(str(len(dataMid)))
+                      cl.sendMention(msg.to, ret_, dataMid)
+              elif text.lower() == 'speed':
+                if sender in settings["admin"]:
+                  start = time.time()
+                  cl.sendMessage(to, "Tunggu sebentar...")
+                  elapsed_time = time.time() - start
+                  cl.sendMessage(to, "[ Speed ]\n{} detik".format(str(elapsed_time)))
+              elif text.lower() == 'cancelall':
+                if sender in settings["admin"]:
+                  if msg.toType == 2:
+                    group = cl.getGroup(to)
+                    if group.invitee is None or group.invitee == []:
+                      cl.sendMessage(to, "Tidak ada yang pending")
+                    else:
+                      invitee = [contact.mid for contact in group.invitee]
+                      for inv in invitee:
+                        cl.cancelGroupInvitation(to, [inv])
+                      cl.sendMessage(to, "「CANCELALL」\nBerhasil membersihkan {} pendingan".format(str(len(invitee))))
+              elif text.lower() == 'qr':
+                if sender in settings["admin"]:
+                  if msg.toType == 2:
+                    group = cl.getGroup(to)
+                    if group.preventedJoinByTicket == False:
+                      ticket = cl.reissueGroupTicket(to)
+                      cl.sendMessage(to, "[ Group Ticket ]\nhttps://line.me/R/ti/g/{}".format(str(ticket)))
+                    else:
+                      cl.sendMessage(to, "Grup qr tidak terbuka silahkan buka terlebih dahulu dengan perintah QR ON")
+              elif text.lower() == 'qr on':
+                if sender in settings["admin"]:
+                  if msg.toType == 2:
+                    group = cl.getGroup(to)
+                    if group.preventedJoinByTicket == False:
+                      cl.sendMessage(to, "QR grup sudah terbuka")
+                    else:
+                      group.preventedJoinByTicket = False
+                      cl.updateGroup(group)
+                      cl.sendMessage(to, "QR grup dibuka")
+              elif text.lower() == 'qr off':
+                if sender in settings["admin"]:
+                  if msg.toType == 2:
+                    group = cl.getGroup(to)
+                    if group.preventedJoinByTicket == True:
+                      cl.sendMessage(to, "QR grup sudah tertutup")
+                    else:
+                      group.preventedJoinByTicket = True
+                      cl.updateGroup(group)
+                      cl.sendMessage(to, "QR grup ditutup")
+              elif text.lower() == 'creator':
+                sender_profile = cl.getContact(to)
+                dataProfile = [
+                  {
+                    "type": "bubble",
+                    "body": {
+                      "type": "box",
+                      "layout": "vertical",
+                      "contents": [
+                        {
+                          "type": "box",
+                          "layout": "horizontal",
+                          "contents": [
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "image",
+                                  "url": "https://obs.line-scdn.net/{}".format(cl.getContact("u4669d4ad77f131a3fb4219a939fba991").pictureStatus),
+                                  "aspectMode": "cover",
+                                  "size": "full"
+                                }
+                              ],
+                              "cornerRadius": "100px",
+                              "width": "72px",
+                              "height": "72px"
+                            },
+                            {
+                              "type": "box",
+                              "layout": "vertical",
+                              "contents": [
+                                {
+                                  "type": "text",
+                                  "contents": [
+                                    {
+                                      "type": "span",
+                                      "text": "Yepz",
+                                      "weight": "bold",
+                                      "color": "#000000",
+                                      "size": "xl",
+                                      "style": "normal"
+                                    },
+                                    {
+                                      "type": "span",
+                                      "text": "      "
+                                    },
+                                    {
+                                      "type": "span",
+                                      "text": " "
+                                    }
+                                  ],
+                                  "size": "sm",
+                                  "wrap": True
+                                },
+                                {
+                                  "type": "box",
+                                  "layout": "baseline",
+                                  "contents": [
+                                    {
+                                      "type": "text",
+                                      "text": "https://line.me/ti/p/~myyepz",
+                                      "size": "xxs",
+                                      "color": "#0000ff",
+                                      "action": {
+                                        "type": "uri",
+                                        "label": "action",
+                                        "uri": "https://line.me/ti/p/~myyepz"
+                                      },
+                                      "decoration": "underline"
+                                    }
+                                  ],
+                                  "spacing": "sm",
+                                  "margin": "md"
+                                }
+                              ]
+                            }
+                          ],
+                          "spacing": "xl",
+                          "paddingAll": "20px"
+                        }
+                      ],
+                      "paddingAll": "0px",
+                      "borderWidth": "4px",
+                      "borderColor": "#000000",
+                      "cornerRadius": "15px"
+                    }
+                  }
+                ]
+                main = {
+                  "type": "flex",
+                  "altText": "Love Yepz",
+                  "contents": {
+                      "type": "carousel",
+                      "contents": dataProfile
                   }
                 }
-                }
-                                    cl.postTemplate(to, data)
-                              break
+                cl.postTemplate(to, main)
+
+              if msg.text.lower().startswith("stealcontact "):
+                if sender in settings["admin"]:
+                  if 'MENTION' in msg.contentMetadata.keys()!= None:
+                    names = re.findall(r'@(\w+)', text)
+                    mention = ast.literal_eval(msg.contentMetadata['MENTION'])
+                    mentionees = mention['MENTIONEES']
+                    lists = []
+                    for mention in mentionees:
+                      if mention["M"] not in lists:
+                        lists.append(mention["M"])
+                    for ls in lists:
+                      contact = cl.getContact(ls)
+                      mi_d = contact.mid
+                      cl.sendContact(msg.to, mi_d)
+              elif msg.text.lower().startswith("stealpicture "):
+                if sender in settings["admin"]:
+                  if 'MENTION' in msg.contentMetadata.keys()!= None:
+                    names = re.findall(r'@(\w+)', text)
+                    mention = ast.literal_eval(msg.contentMetadata['MENTION'])
+                    mentionees = mention['MENTIONEES']
+                    lists = []
+                    for mention in mentionees:
+                      if mention["M"] not in lists:
+                        lists.append(mention["M"])
+                    for ls in lists:
+                      path = "http://dl.profile.line.naver.jp/" + cl.getContact(ls).pictureStatus
+                      cl.sendImageWithURL(msg.to, str(path))
+              elif msg.text.lower().startswith("stealvidprofile "):
+                if sender in settings["admin"]:
+                  if 'MENTION' in msg.contentMetadata.keys()!= None:
+                    names = re.findall(r'@(\w+)', text)
+                    mention = ast.literal_eval(msg.contentMetadata['MENTION'])
+                    mentionees = mention['MENTIONEES']
+                    lists = []
+                    for mention in mentionees:
+                      if mention["M"] not in lists:
+                        lists.append(mention["M"])
+                    for ls in lists:
+                      path = "http://dl.profile.cl.naver.jp/" + cl.getContact(ls).pictureStatus + "/vp"
+                      cl.sendImageWithURL(msg.to, str(path))
+              elif msg.text.lower().startswith("stealcover "):
+                if sender in settings["admin"]:
+                  if cl != None:
+                    if 'MENTION' in msg.contentMetadata.keys()!= None:
+                      names = re.findall(r'@(\w+)', text)
+                      mention = ast.literal_eval(msg.contentMetadata['MENTION'])
+                      mentionees = mention['MENTIONEES']
+                      lists = []
+                      for mention in mentionees:
+                        if mention["M"] not in lists:
+                          lists.append(mention["M"])
+                      for ls in lists:
+                        path = cl.getProfileCoverURL(ls)
+                        cl.sendImageWithURL(msg.to, str(path))
+
+              if "/ti/g/" in msg.text.lower():
+                if settings["autoJoinTicket"] == True:
+                  link_re = re.compile('(?:line\:\/|line\.me\/R)\/ti\/g\/([a-zA-Z0-9_-]+)?')
+                  links = link_re.findall(text)
+                  n_links = []
+                  for l in links:
+                    if l not in n_links:
+                      n_links.append(l)
+                  for ticket_id in n_links:
+                    group = cl.findGroupByTicket(ticket_id)
+                    cl.acceptGroupInvitationByTicket(group.id, ticket_id)
+                    cl.sendMessage(to, "Berhasil masuk ke group %s" % str(group.name))
+        # if op.type == 26:
+        #     print ("[ 26 ] RECEIVE MESSAGE")
+        #     msg = op.message
+        #     text = msg.text
+        #     msg_id = msg.id
+        #     receiver = msg.to
+        #     sender = msg._from
+        #     if msg.toType == 0:
+        #         if sender != cl.profile.mid:
+        #             to = sender
+        #         else:
+        #             to = receiver
+        #             if settings["autoRead"] == True:
+        #               cl.sendChatChecked(to, msg_id)
+        #     else:
+        #         if msg.toType == 0 or msg.toType == 1 or msg.toType == 2:
+        #           to = receiver
+        #           if settings["autoRead"] == True:
+        #               cl.sendChatChecked(to, msg_id)
+        #         if msg.contentType == 0:
+        #           to = receiver
+        #           if settings["autoRead"] == True:
+        #               cl.sendChatChecked(to, msg_id)
+        #           if text is None:
+        #               return
+        #           if "/ti/g/" in msg.text.lower():
+        #             if sender not in admin:
+        #               if settings["autoJoinTicket"] == True:
+        #                   link_re = re.compile(
+        #                       '(?:line\:\/|line\.me\/R)\/ti\/g\/([a-zA-Z0-9_-]+)?')
+        #                   links = link_re.findall(text)
+        #                   n_links = []
+        #                   for l in links:
+        #                       if l not in n_links:
+        #                           n_links.append(l)
+        #                   for ticket_id in n_links:
+        #                       group = cl.findGroupByTicket(ticket_id)
+        #                       cl.acceptGroupInvitationByTicket(
+        #                           group.id, ticket_id)
+        #                       cl.sendMessage(
+        #                           to, "Berhasil masuk ke group %s" % str(group.name))
+        #           elif text.lower() == "public":
+        #             cl.sendMessage(sender, "PESAN PUBLIC")
+        #         if to in read["readPoint"]:
+        #             if sender not in read["ROM"][to]:
+        #                 read["ROM"][to][sender] = True
+        #         if sender in settings["mimic"]["target"] and settings["mimic"]["status"] == True and settings["mimic"]["target"][sender] == True:
+        #             text = msg.text
+        #             if text is not None:
+        #                 cl.sendMessage(msg.to,text)
+        #         if sender in settings["blacklist"]== True:
+        #             text = msg.text
+        #             if text is not None:
+        #                 cl.sendMessage(msg.to,text)
+        #         if msg.contentType == 16:
+        #             if msg.toType in (2,1,0):
+        #                 purl = msg.contentMetadata["postEndUrl"].split('userMid=')[1].split('&postId=')
+        #                 adw = cl.likePost(purl[0], purl[1], random.choice([1001,1002,1003,1004,1005]))
+        #                 adws = cl.createComment(purl[0], purl[1], settings["commentPost"])
+        #                 sendTextTemplate(to, "AUTO LIKE SUCCES")
+        #         if msg.contentType == 0 and sender not in clMID and msg.toType == 2:
+        #             if 'MENTION' in msg.contentMetadata.keys()!= None:
+        #                 names = re.findall(r'@(\w+)', text)
+        #                 mention = ast.literal_eval(msg.contentMetadata['MENTION'])
+        #                 mentionees = mention['MENTIONEES']
+        #                 group = cl.getGroup(to)
+        #                 for mention in mentionees:
+        #                     if clMid in mention["M"]:
+        #                       if settings["detectMention"] == True:
+        #                             data = {
+        #                                                 "type": "flex",
+        #                                                 "altText": "you kickout from group",
+        #                                                 "contents": {
+        #           "styles": {
+        #             "body": {
+        #               "backgroundColor": "#0000CD"
+        #             }
+        #           },
+        #           "type": "bubble",
+        #           "body": {
+        #             "contents": [
+        #               {
+        #                 "contents": [
+        #                   {
+        #                     "contents": [
+        #                       {
+        #                         "text": settings["autoResponMessage"],
+        #                         "size": "md",
+        #                         "margin": "none",
+        #                         "color": "#FFFFFF",
+        #                         "wrap": True,
+        #                         "weight": "bold",
+        #                        "type": "text"
+        #                       }
+        #                     ],
+        #                     "type": "box",
+        #                     "layout": "baseline"
+        #                   }
+        #                 ],
+        #                 "type": "box",
+        #                 "layout": "vertical"
+        #               }
+        #             ],
+        #             "type": "box",
+        #             "spacing": "md",
+        #             "layout": "vertical"
+        #           }
+        #         }
+        #         }
+        #                             cl.postTemplate(to, data)
+        #                       break
 
         if op.type == 17:
            print ("MEMBER JOIN TO GROUP")
            if settings["notifikasi"] == True:
               if op.param2 in clMID:
                  return
+              ginfo = cl.getGroup(op.param1)
               name = cl.getContact(op.param2).displayName
-              cl.sendMessage(op.param1,"Halo... " + cl.getContact(op.param2).displayName + "\nSelamat datang di " + str(ginfo.name) + "\n Semoga betah ya😃")
+              mid = cl.getContact(op.param2).mid
+              sendMention(op.param1, mid, "", settings["welcomeMessage"])
               # cl.sendMention(op.param1, "@!" + name)
 
         if op.type == 15:
@@ -2365,39 +3086,35 @@ def clBot(op):
           if settings["notifikasi"] == True:
             if op.param2 in clMID:
               return
-              ginfo = cl.getGroup(op.param1)
-              contact = cl.getContact(op.param2).displayName
               cl.sendMessage(op.param1, "Yah ada yang keluar")
 
         if op.type == 55:
             print ("[ 55 ] NOTIFIED READ MESSAGE")
             try:
-                if cctv['cyduk'][op.param1]==True:
-                    if op.param1 in cctv['point']:
-                        Name = cl.getContact(op.param2).displayName
-                        if Name in cctv['sidermem'][op.param1]:
-                            pass
-                        else:
-                            cctv['sidermem'][op.param1] += "\nâ¢ " + Name
-                            if " " in Name:
-                                nick = Name.split(' ')
-                                if len(nick) == 2:
-                                    cctv(op.param1, "@!" + Name)
-                                    time.sleep(0.2)
-                                else:
-                                    cctv(op.param1, "@!" + Name)
-                                    time.sleep(0.2)
-                            else:
-                                cctv(op.param1, "@!" + Name)
-                                time.sleep(0.2)
+              if cctv['cyduk'][op.param1]==True:
+                if op.param1 in cctv['point']:
+                  Name = cl.getContact(op.param2).displayName
+                  if Name in cctv['sidermem'][op.param1]:
+                      pass
+                  else:
+                    cctv['sidermem'][op.param1] += "\nâ¢ " + Name
+                    if " " in Name:
+                      nick = Name.split(' ')
+                      if len(nick) == 2:
+                        Camera(op.param1, Name)
+                        time.sleep(0.2)
+                      else:
+                        Camera(op.param1, Name)
+                        time.sleep(0.2)
                     else:
-                        pass
+                      Camera(op.param1, Name)
+                      time.sleep(0.2)
                 else:
-                    pass
+                  pass
+              else:
+                pass
             except:
                 pass
-
-
         if op.type == 55:
             print ("[ 55 ] NOTIFIED READ MESSAGE")
             try:
